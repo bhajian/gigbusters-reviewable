@@ -3,13 +3,12 @@ import {
     APIGatewayProxyResult,
     APIGatewayProxyEvent
 } from 'aws-lambda';
-import {getEventBody, getSub} from "../lib/utils";
 import {Env} from "../lib/env";
-import {CategoryService} from "../service/category-service";
-import {CategoryPutParams} from "../service/types";
+import {ReviewableService} from "../service/reviewable-service";
+import {getSub} from "../lib/utils";
 
 const table = Env.get('TABLE')
-const service = new CategoryService({
+const service = new ReviewableService({
     table: table
 })
 
@@ -23,17 +22,18 @@ export async function handler(event: APIGatewayProxyEvent, context: Context):
             'Access-Control-Allow-Headers': '*',
             'Access-Control-Allow-Methods': '*'
         },
-        body: 'Hello From Todo Edit Api!'
+        body: ''
     }
-    try {
-        const item = getEventBody(event) as CategoryPutParams;
-        const sub = getSub(event)
-        item.userId = sub
-        const res = await service.put(item)
-        result.body = JSON.stringify(res)
-    } catch (error) {
+    try{
+        const userId = getSub(event)
+        const item = await service.list(userId)
+
+        result.body = JSON.stringify(item)
+        return result
+    }
+    catch (e) {
         result.statusCode = 500
-        result.body = error.message
+        result.body = e.message
     }
     return result
 }

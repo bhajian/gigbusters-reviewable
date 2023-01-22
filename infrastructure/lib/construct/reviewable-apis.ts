@@ -2,7 +2,7 @@ import {Construct} from "constructs";
 import {GenericDynamoTable} from "../generic/GenericDynamoTable";
 import {GenericApi} from "../generic/GenericApi";
 import {NodejsFunction} from "aws-cdk-lib/aws-lambda-nodejs";
-import {postCategorySchema, putCategorySchema} from "./reviewable-schema";
+import {postReviewableSchema, putReviewableSchema} from "./reviewable-schema";
 import {CognitoUserPoolsAuthorizer, IResource} from "aws-cdk-lib/aws-apigateway";
 import {AuthorizationType} from "@aws-cdk/aws-apigateway";
 import config from "../../config/config";
@@ -58,7 +58,7 @@ export class ReviewableApis extends GenericApi {
             userPoolArn: config.userPoolArn
         })
 
-        const idResource = this.api.root.addResource('{categoryId}')
+        const idResource = this.api.root.addResource('{reviewableId}')
         this.initializeCategoryApis({
             authorizer: authorizer,
             idResource: idResource,
@@ -86,7 +86,7 @@ export class ReviewableApis extends GenericApi {
             functionName: 'reviewable-get',
             handlerName: 'reviewable-get-handler.ts',
             verb: 'GET',
-            resource: props.rootResource,
+            resource: props.idResource,
             environment: {
                 TABLE: props.table.tableName
             },
@@ -104,7 +104,7 @@ export class ReviewableApis extends GenericApi {
                 TABLE: props.table.tableName
             },
             validateRequestBody: true,
-            bodySchema: postCategorySchema,
+            bodySchema: postReviewableSchema,
             authorizationType: AuthorizationType.COGNITO,
             authorizer: props.authorizer
         })
@@ -118,7 +118,7 @@ export class ReviewableApis extends GenericApi {
                 TABLE: props.table.tableName
             },
             validateRequestBody: true,
-            bodySchema: putCategorySchema,
+            bodySchema: putReviewableSchema,
             authorizationType: AuthorizationType.COGNITO,
             authorizer: props.authorizer
         })
@@ -127,7 +127,7 @@ export class ReviewableApis extends GenericApi {
             functionName: 'reviewable-delete',
             handlerName: 'reviewable-delete-handler.ts',
             verb: 'DELETE',
-            resource: props.rootResource,
+            resource: props.idResource,
             environment: {
                 TABLE: props.table.tableName
             },
@@ -137,7 +137,10 @@ export class ReviewableApis extends GenericApi {
         })
 
         props.table.grantFullAccess(this.listApi.grantPrincipal)
+        props.table.grantFullAccess(this.getApi.grantPrincipal)
+        props.table.grantFullAccess(this.postApi.grantPrincipal)
         props.table.grantFullAccess(this.putApi.grantPrincipal)
+        props.table.grantFullAccess(this.deleteApi.grantPrincipal)
     }
 
     protected createAuthorizer(props: AuthorizerProps): CognitoUserPoolsAuthorizer{

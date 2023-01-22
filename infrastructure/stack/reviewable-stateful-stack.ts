@@ -45,9 +45,9 @@ export class ReviewableStatefulStack extends Stack {
     }
 
     private initializeReviewablePhotosBucket() {
-        this.reviewablePhotoBucket = new Bucket(this, 'profile-photos', {
+        this.reviewablePhotoBucket = new Bucket(this, 'reviewable-photos', {
             removalPolicy: RemovalPolicy.DESTROY,
-            bucketName: `profile-photos-${config.envName}-${this.suffix}`,
+            bucketName: `reviewable-photos-${config.envName}-${this.suffix}`,
             cors: [{
                 allowedMethods: [
                     HttpMethods.HEAD,
@@ -58,7 +58,7 @@ export class ReviewableStatefulStack extends Stack {
                 allowedHeaders: ['*']
             }]
         });
-        new CfnOutput(this, 'profile-photos-bucket-name', {
+        new CfnOutput(this, 'reviewable-photos-bucket-name', {
             value: this.reviewablePhotoBucket.bucketName
         })
     }
@@ -67,7 +67,7 @@ export class ReviewableStatefulStack extends Stack {
         const authenticatedRole = Role.fromRoleArn(
             this, 'authenticatedRole', config.authenticatedRoleArn)
         const adminRole = Role.fromRoleArn(
-            this, 'authenticatedRole', config.adminRoleArn)
+            this, 'adminRole', config.adminRoleArn)
         const uploadBucketPolicy = new PolicyStatement({
             effect: Effect.ALLOW,
             actions: [

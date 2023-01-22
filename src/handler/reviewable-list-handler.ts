@@ -4,11 +4,11 @@ import {
     APIGatewayProxyEvent
 } from 'aws-lambda';
 import {Env} from "../lib/env";
-import {CategoryService} from "../service/category-service";
+import {ReviewableService} from "../service/reviewable-service";
 import {getSub} from "../lib/utils";
 
 const table = Env.get('TABLE')
-const service = new CategoryService({
+const service = new ReviewableService({
     table: table
 })
 
