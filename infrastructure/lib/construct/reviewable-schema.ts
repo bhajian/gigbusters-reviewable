@@ -1,33 +1,38 @@
 import {JsonSchemaType} from "aws-cdk-lib/aws-apigateway";
 
-export const postCategorySchema = {
+export const postReviewableSchema = {
     type: JsonSchemaType.OBJECT,
     required: [
-        "type", "uri", "name", "photos", "categories",
-        "location", "topics"
+        "type", "uri",
+        // "name", "photos", "categories",
+        // "location", "topics"
     ],
     properties: {
-        name: {
+        type: {
             type: JsonSchemaType.STRING
         },
-        ranking: {
-            type: JsonSchemaType.NUMBER
+        uri: {
+            type: JsonSchemaType.STRING
         },
     },
 }
 
-export const putCategorySchema = {
+export const putReviewableSchema = {
     type: JsonSchemaType.OBJECT,
     required: [
-        "id", "type", "uri", "name", "photos", "categories",
-        "location", "topics"
+        "id", "type", "uri",
+        // "name", "photos", "categories",
+        // "location", "topics"
     ],
     properties: {
-        name: {
+        id: {
             type: JsonSchemaType.STRING
         },
-        ranking: {
-            type: JsonSchemaType.NUMBER
+        type: {
+            type: JsonSchemaType.STRING
+        },
+        uri: {
+            type: JsonSchemaType.STRING
         },
     },
 }

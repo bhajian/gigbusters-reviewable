@@ -1,27 +1,27 @@
 import { DocumentClient, ScanInput } from 'aws-sdk/clients/dynamodb'
 import { v4 as uuidv4 } from 'uuid'
 import {
-    CategoryCreateParams,
-    CategoryDeleteParams,
-    CategoryPutParams,
-    CategoryEntity,
-    CategoryGetParams
+    ReviewableCreateParams,
+    ReviewableDeleteParams,
+    ReviewablePutParams,
+    ReviewableEntity,
+    ReviewableGetParams
 } from "./types";
 
-interface ProfileServiceProps{
+interface ReviewableServiceProps{
     table: string
 }
 
-export class CategoryService {
+export class ReviewableService {
 
-    private props: ProfileServiceProps
+    private props: ReviewableServiceProps
     private documentClient = new DocumentClient()
 
-    public constructor(props: ProfileServiceProps){
+    public constructor(props: ReviewableServiceProps){
         this.props = props
     }
 
-    async list(userId: string): Promise<CategoryEntity[]> {
+    async list(userId: string): Promise<ReviewableEntity[]> {
         const response = await this.documentClient
             .scan({
                 TableName: this.props.table,
@@ -31,12 +31,12 @@ export class CategoryService {
                 },
             }).promise()
         if (response.Items === undefined) {
-            return [] as CategoryEntity[]
+            return [] as ReviewableEntity[]
         }
-        return response.Items as CategoryEntity[]
+        return response.Items as ReviewableEntity[]
     }
 
-    async get(params: CategoryGetParams): Promise<CategoryEntity> {
+    async get(params: ReviewableGetParams): Promise<ReviewableEntity> {
         const response = await this.documentClient
             .get({
                 TableName: this.props.table,
@@ -44,10 +44,10 @@ export class CategoryService {
                     name: params.name,
                 },
             }).promise()
-        return response.Item as CategoryEntity
+        return response.Item as ReviewableEntity
     }
 
-    async put(params: CategoryPutParams): Promise<CategoryEntity> {
+    async put(params: ReviewablePutParams): Promise<ReviewableEntity> {
         const response = await this.documentClient
             .put({
                 TableName: this.props.table,
@@ -56,7 +56,7 @@ export class CategoryService {
         return params
     }
 
-    async delete(params: CategoryDeleteParams) {
+    async delete(params: ReviewableDeleteParams) {
         const response = await this.documentClient
             .delete({
                 TableName: this.props.table,
