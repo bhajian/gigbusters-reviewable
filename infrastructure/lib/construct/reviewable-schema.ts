@@ -20,14 +20,11 @@ export const postReviewableSchema = {
 export const putReviewableSchema = {
     type: JsonSchemaType.OBJECT,
     required: [
-        "id", "type", "uri",
+        "type", "uri",
         // "name", "photos", "categories",
         // "location", "topics"
     ],
     properties: {
-        id: {
-            type: JsonSchemaType.STRING
-        },
         type: {
             type: JsonSchemaType.STRING
         },

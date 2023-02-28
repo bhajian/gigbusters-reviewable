@@ -8,8 +8,10 @@ import {ReviewableService} from "../service/reviewable-service";
 import {getSub} from "../lib/utils";
 
 const table = Env.get('TABLE')
+const bucket = Env.get('IMAGE_BUCKET')
 const service = new ReviewableService({
-    table: table
+    table: table,
+    bucket: bucket
 })
 
 export async function handler(event: APIGatewayProxyEvent, context: Context):

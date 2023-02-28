@@ -1,15 +1,13 @@
 import { DocumentClient, ScanInput } from 'aws-sdk/clients/dynamodb'
 import { v4 as uuidv4 } from 'uuid'
 import {
-    ReviewableCreateParams,
-    ReviewableDeleteParams,
-    ReviewablePutParams,
     ReviewableEntity,
-    ReviewableGetParams
+    ReviewableKeyParams
 } from "./types";
 
 interface ReviewableServiceProps{
     table: string
+    bucket: string
 }
 
 export class ReviewableService {
@@ -23,12 +21,11 @@ export class ReviewableService {
 
     async list(userId: string): Promise<ReviewableEntity[]> {
         const response = await this.documentClient
-            .scan({
+            .query({
                 TableName: this.props.table,
-                FilterExpression: 'ranking >= :ranking',
-                ExpressionAttributeValues: {
-                    ':ranking': 0
-                },
+                IndexName: 'userIdIndex',
+                KeyConditionExpression: 'userId = :userId',
+                ExpressionAttributeValues : {':userId' : userId}
             }).promise()
         if (response.Items === undefined) {
             return [] as ReviewableEntity[]
@@ -36,32 +33,33 @@ export class ReviewableService {
         return response.Items as ReviewableEntity[]
     }
 
-    async get(params: ReviewableGetParams): Promise<ReviewableEntity> {
+    async get(params: ReviewableKeyParams): Promise<ReviewableEntity> {
         const response = await this.documentClient
             .get({
                 TableName: this.props.table,
                 Key: {
-                    name: params.name,
+                    uri: params.uri,
                 },
             }).promise()
         return response.Item as ReviewableEntity
     }
 
-    async put(params: ReviewablePutParams): Promise<ReviewableEntity> {
+    async put(params: ReviewableEntity): Promise<ReviewableEntity> {
         const response = await this.documentClient
             .put({
                 TableName: this.props.table,
                 Item: params,
             }).promise()
+        console.log(response)
         return params
     }
 
-    async delete(params: ReviewableDeleteParams) {
+    async delete(params: ReviewableEntity) {
         const response = await this.documentClient
             .delete({
                 TableName: this.props.table,
                 Key: {
-                    name: params.name,
+                    uri: params.uri,
                 },
             }).promise()
     }
