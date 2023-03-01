@@ -31,7 +31,7 @@ export async function handler(event: APIGatewayProxyEvent, context: Context):
         const item = getEventBody(event) as ReviewableEntity;
         const sub = getSub(event)
         item.userId = sub
-        const res = await service.put(item)
+        const res = await service.create(item)
         result.body = JSON.stringify(res)
     } catch (error) {
         result.statusCode = 500

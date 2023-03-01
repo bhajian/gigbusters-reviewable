@@ -59,7 +59,7 @@ export class ReviewableApis extends GenericApi {
             userPoolArn: config.userPoolArn
         })
 
-        const idResource = this.api.root.addResource('{reviewableId}')
+        const idResource = this.api.root.addResource('{id}')
         this.initializeReviewableApis({
             authorizer: authorizer,
             idResource: idResource,

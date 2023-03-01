@@ -4,8 +4,8 @@ import {
     APIGatewayProxyEvent
 } from 'aws-lambda';
 import {Env} from "../lib/env";
-import {ReviewableService} from "../service/reviewable-service";
 import {getPathParameter, getSub} from "../lib/utils";
+import {ReviewableService} from "../service/reviewable-service";
 
 const table = Env.get('TABLE')
 const bucket = Env.get('IMAGE_BUCKET')
@@ -29,12 +29,12 @@ export async function handler(event: APIGatewayProxyEvent, context: Context):
     try{
         const userId = getSub(event)
         const id = getPathParameter(event, 'id')
-        const item = await service.get({
+        const photos = await service.listPhotos({
             id: id,
             userId: userId
         })
 
-        result.body = JSON.stringify(item)
+        result.body = JSON.stringify(photos)
         return result
     }
     catch (e) {

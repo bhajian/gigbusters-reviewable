@@ -1,4 +1,5 @@
 export interface ReviewableKeyParams {
+    id: string
     uri?: string
     userId: string
 }
@@ -6,7 +7,7 @@ export interface PhotoEntry {
     photoId: string
     bucket?: string
     key?: string
-    type: string
+    type?: string
 }
 export interface LocationEntry {
     locationName: string
@@ -14,10 +15,11 @@ export interface LocationEntry {
     longitude: number
 }
 export interface ReviewableEntity {
+    id: string
     uri: string
     userId: string
     type: string
-    cumulativeRate: number
+    cumulativeRating: number
     numberOfReviews: number
     claimedBy?: string
     photos: [PhotoEntry]

@@ -28,19 +28,23 @@ export class ReviewableStatefulStack extends Stack {
     }
 
     private initializeDynamoDBTable() {
-        this.dynamodbTable = new GenericDynamoTable(this, 'ReviewableDynamoDBTable', {
+        this.dynamodbTable = new GenericDynamoTable(this,
+            'ReviewableDynamoDBTable', {
             removalPolicy: RemovalPolicy.DESTROY,
             tableName: `Reviewable-${config.envName}-${this.suffix}`,
             stream: StreamViewType.NEW_AND_OLD_IMAGES,
-            primaryKey: 'uri',
+            primaryKey: 'id',
             keyType: AttributeType.STRING
+        })
+        this.dynamodbTable.addSecondaryIndexes({
+            indexName: 'uriIndex',
+            partitionKeyName: 'uri',
+            partitionKeyType: AttributeType.STRING,
         })
         this.dynamodbTable.addSecondaryIndexes({
             indexName: 'userIdIndex',
             partitionKeyName: 'userId',
             partitionKeyType: AttributeType.STRING,
-            sortKeyName: 'cumulativeRate',
-            sortKeyType: AttributeType.NUMBER,
         })
     }
 
