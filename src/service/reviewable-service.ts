@@ -4,7 +4,7 @@ import {
     LocationEntry, PhotoEntry,
     ReviewableEntity,
     ReviewableKeyParams
-} from "./types";
+} from "./reviewable-types";
 
 interface ReviewableServiceProps{
     table: string

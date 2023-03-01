@@ -6,7 +6,7 @@ import {
 import {getEventBody, getSub} from "../lib/utils";
 import {Env} from "../lib/env";
 import {ReviewableService} from "../service/reviewable-service";
-import {ReviewableEntity} from "../service/types";
+import {ReviewableEntity} from "../service/reviewable-types";
 
 const table = Env.get('TABLE')
 const bucket = Env.get('IMAGE_BUCKET')
