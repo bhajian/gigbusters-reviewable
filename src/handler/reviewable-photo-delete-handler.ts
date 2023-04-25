@@ -4,8 +4,8 @@ import {
     APIGatewayProxyEvent
 } from 'aws-lambda';
 import {Env} from "../lib/env";
-import {ReviewableService} from "../service/reviewable-service";
 import {getPathParameter, getSub} from "../lib/utils";
+import {ReviewableService} from "../service/reviewable-service";
 
 const table = Env.get('TABLE')
 const bucket = Env.get('IMAGE_BUCKET')
@@ -16,7 +16,6 @@ const service = new ReviewableService({
 
 export async function handler(event: APIGatewayProxyEvent, context: Context):
     Promise<APIGatewayProxyResult> {
-
     const result: APIGatewayProxyResult = {
         statusCode: 200,
         headers: {
@@ -24,22 +23,23 @@ export async function handler(event: APIGatewayProxyEvent, context: Context):
             'Access-Control-Allow-Headers': '*',
             'Access-Control-Allow-Methods': '*'
         },
-        body: ''
+        body: 'Hello From Edit Api!'
     }
-    try{
-        const userId = getSub(event)
+    try {
         const id = getPathParameter(event, 'id')
-        const item = await service.get({
+        const photoId = getPathParameter(event, 'photoId')
+        const sub = getSub(event)
+        await service.deletePhoto({
             id: id,
-            userId: userId
+            userId: sub,
+        }, {
+            photoId: photoId
         })
-
-        result.body = JSON.stringify(item)
-        return result
-    }
-    catch (e) {
+        result.body = JSON.stringify({success: true})
+    } catch (error) {
+        console.error(error.message)
         result.statusCode = 500
-        result.body = e.message
+        result.body = error.message
     }
     return result
 }

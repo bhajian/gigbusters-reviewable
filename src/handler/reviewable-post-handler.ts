@@ -6,11 +6,13 @@ import {
 import {getEventBody, getSub} from "../lib/utils";
 import {Env} from "../lib/env";
 import {ReviewableService} from "../service/reviewable-service";
-import {ReviewablePutParams} from "../service/types";
+import {ReviewableEntity} from "../service/reviewable-types";
 
 const table = Env.get('TABLE')
+const bucket = Env.get('IMAGE_BUCKET')
 const service = new ReviewableService({
-    table: table
+    table: table,
+    bucket: bucket
 })
 
 export async function handler(event: APIGatewayProxyEvent, context: Context):
@@ -26,10 +28,10 @@ export async function handler(event: APIGatewayProxyEvent, context: Context):
         body: 'Hello From Todo Edit Api!'
     }
     try {
-        const item = getEventBody(event) as ReviewablePutParams;
+        const item = getEventBody(event) as ReviewableEntity;
         const sub = getSub(event)
         item.userId = sub
-        const res = await service.put(item)
+        const res = await service.create(item)
         result.body = JSON.stringify(res)
     } catch (error) {
         result.statusCode = 500

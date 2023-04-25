@@ -3,9 +3,10 @@ import {
     APIGatewayProxyResult,
     APIGatewayProxyEvent
 } from 'aws-lambda';
+import {getEventBody, getPathParameter, getSub} from "../lib/utils";
 import {Env} from "../lib/env";
 import {ReviewableService} from "../service/reviewable-service";
-import {getPathParameter, getSub} from "../lib/utils";
+import {LocationEntry} from "../service/reviewable-types";
 
 const table = Env.get('TABLE')
 const bucket = Env.get('IMAGE_BUCKET')
@@ -16,7 +17,6 @@ const service = new ReviewableService({
 
 export async function handler(event: APIGatewayProxyEvent, context: Context):
     Promise<APIGatewayProxyResult> {
-
     const result: APIGatewayProxyResult = {
         statusCode: 200,
         headers: {
@@ -24,22 +24,21 @@ export async function handler(event: APIGatewayProxyEvent, context: Context):
             'Access-Control-Allow-Headers': '*',
             'Access-Control-Allow-Methods': '*'
         },
-        body: ''
+        body: 'Empty!'
     }
-    try{
-        const userId = getSub(event)
+    try {
         const id = getPathParameter(event, 'id')
-        const item = await service.get({
-            id: id,
-            userId: userId
-        })
+        const sub = getSub(event)
+        const location = getEventBody(event) as LocationEntry
 
-        result.body = JSON.stringify(item)
-        return result
-    }
-    catch (e) {
+        const res = await service.setLocation({
+            id: id,
+            userId: sub,
+        }, location)
+        result.body = JSON.stringify({success: true})
+    } catch (error) {
         result.statusCode = 500
-        result.body = e.message
+        result.body = error.message
     }
     return result
 }

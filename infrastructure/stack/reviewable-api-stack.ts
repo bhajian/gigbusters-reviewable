@@ -16,8 +16,8 @@ export class ReviewableApiStack extends Stack {
               props?: cdk.StackProps) {
     super(scope, id, props);
     this.reviewableApis = new ReviewableApis(this,id, {
-      dynamoDBTable: reviewableApiProps.reviewableApiStatefulStack.dynamodbTable,
-      s3Bucket: reviewableApiProps.reviewableApiStatefulStack.reviewablePhotoBucket
+      reviewableTable: reviewableApiProps.reviewableApiStatefulStack.dynamodbTable,
+      reviewableImageBucket: reviewableApiProps.reviewableApiStatefulStack.reviewablePhotoBucket
     })
   }
 

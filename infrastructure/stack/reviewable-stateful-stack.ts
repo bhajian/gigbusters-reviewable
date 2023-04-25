@@ -28,7 +28,8 @@ export class ReviewableStatefulStack extends Stack {
     }
 
     private initializeDynamoDBTable() {
-        this.dynamodbTable = new GenericDynamoTable(this, 'ReviewableDynamoDBTable', {
+        this.dynamodbTable = new GenericDynamoTable(this,
+            'ReviewableDynamoDBTable', {
             removalPolicy: RemovalPolicy.DESTROY,
             tableName: `Reviewable-${config.envName}-${this.suffix}`,
             stream: StreamViewType.NEW_AND_OLD_IMAGES,
@@ -36,11 +37,14 @@ export class ReviewableStatefulStack extends Stack {
             keyType: AttributeType.STRING
         })
         this.dynamodbTable.addSecondaryIndexes({
-            indexName: 'userIdIndex',
-            partitionKeyName: 'creatorId',
+            indexName: 'uriIndex',
+            partitionKeyName: 'uri',
             partitionKeyType: AttributeType.STRING,
-            sortKeyName: 'averageRating',
-            sortKeyType: AttributeType.NUMBER,
+        })
+        this.dynamodbTable.addSecondaryIndexes({
+            indexName: 'userIdIndex',
+            partitionKeyName: 'userId',
+            partitionKeyType: AttributeType.STRING,
         })
     }
 
@@ -72,7 +76,9 @@ export class ReviewableStatefulStack extends Stack {
             effect: Effect.ALLOW,
             actions: [
                 's3:PutObject',
-                's3:PutObjectAcl'
+                's3:PutObjectAcl',
+                's3:GetObject',
+                's3:DeleteObject'
             ],
             resources: [this.reviewablePhotoBucket.bucketArn + '/*']
         })

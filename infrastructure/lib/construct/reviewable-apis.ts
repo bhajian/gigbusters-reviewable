@@ -11,8 +11,8 @@ import {UserPool} from "aws-cdk-lib/aws-cognito";
 import {Bucket} from "aws-cdk-lib/aws-s3";
 
 export interface ApiProps {
-    dynamoDBTable: GenericDynamoTable
-    s3Bucket: Bucket
+    reviewableTable: GenericDynamoTable
+    reviewableImageBucket: Bucket
 }
 
 export interface AuthorizerProps {
@@ -24,6 +24,7 @@ export interface AuthorizerProps {
 
 export interface ReviewableApiProps {
     table: Table
+    bucket: Bucket
     authorizer: CognitoUserPoolsAuthorizer
     rootResource: IResource
     idResource: IResource
@@ -58,24 +59,26 @@ export class ReviewableApis extends GenericApi {
             userPoolArn: config.userPoolArn
         })
 
-        const idResource = this.api.root.addResource('{reviewableId}')
-        this.initializeCategoryApis({
+        const idResource = this.api.root.addResource('{id}')
+        this.initializeReviewableApis({
             authorizer: authorizer,
             idResource: idResource,
             rootResource: this.api.root,
-            table: props.dynamoDBTable.table
+            table: props.reviewableTable.table,
+            bucket: props.reviewableImageBucket
         })
 
     }
 
-    private initializeCategoryApis(props: ReviewableApiProps){
+    private initializeReviewableApis(props: ReviewableApiProps){
         this.listApi = this.addMethod({
             functionName: 'reviewable-list',
             handlerName: 'reviewable-list-handler.ts',
             verb: 'GET',
             resource: props.rootResource,
             environment: {
-                TABLE: props.table.tableName
+                TABLE: props.table.tableName,
+                IMAGE_BUCKET: props.bucket.bucketName
             },
             validateRequestBody: false,
             authorizationType: AuthorizationType.COGNITO,
@@ -88,7 +91,8 @@ export class ReviewableApis extends GenericApi {
             verb: 'GET',
             resource: props.idResource,
             environment: {
-                TABLE: props.table.tableName
+                TABLE: props.table.tableName,
+                IMAGE_BUCKET: props.bucket.bucketName
             },
             validateRequestBody: false,
             authorizationType: AuthorizationType.COGNITO,
@@ -101,7 +105,8 @@ export class ReviewableApis extends GenericApi {
             verb: 'POST',
             resource: props.rootResource,
             environment: {
-                TABLE: props.table.tableName
+                TABLE: props.table.tableName,
+                IMAGE_BUCKET: props.bucket.bucketName
             },
             validateRequestBody: true,
             bodySchema: postReviewableSchema,
@@ -115,7 +120,8 @@ export class ReviewableApis extends GenericApi {
             verb: 'PUT',
             resource: props.rootResource,
             environment: {
-                TABLE: props.table.tableName
+                TABLE: props.table.tableName,
+                IMAGE_BUCKET: props.bucket.bucketName
             },
             validateRequestBody: true,
             bodySchema: putReviewableSchema,
@@ -129,7 +135,8 @@ export class ReviewableApis extends GenericApi {
             verb: 'DELETE',
             resource: props.idResource,
             environment: {
-                TABLE: props.table.tableName
+                TABLE: props.table.tableName,
+                IMAGE_BUCKET: props.bucket.bucketName
             },
             validateRequestBody: false,
             authorizationType: AuthorizationType.COGNITO,
